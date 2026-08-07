@@ -286,7 +286,25 @@ which is the shape of a bot that has stopped respecting the board.
 Current gauntlet result: **32W / 4L / 0D, no crashes**, unbeaten against four of
 the six rivals.
 
-### Two ideas that sounded right and were measured wrong
+### Conceding apples: the diagnosis was right, the cure was not
+
+An audit of **3045 real turns** where the opponent owned one apple and we owned
+another found the bot moving towards *theirs* **29% of the time**. Not pulled
+there by the food term — which already targets the nearest apple we win — but
+outvoted by territory and space, which do not know an apple has been conceded.
+
+The obvious fix is a penalty for closing on a conceded apple. It won on two seed
+sets (42W-3L against 34W-8L on one) and on a third it **crashed three times in
+24 matches**, where every setting without it crashed none. Pushing a snake away
+from a region is pushing it somewhere, and sometimes that somewhere kills it. It
+is not in the code.
+
+One caveat on the 29% itself: the audit measured *direction*, not intent. A move
+can shorten the distance to their apple while genuinely pursuing something else,
+so the real figure for "wasted trips" is lower than 29%. The problem is real but
+smaller than it first looks, and it is still open.
+
+### Three ideas that sounded right and were measured wrong
 
 Both came out of the correct diagnosis above — every loss is on points — and
 both made the bot worse. The problem is real; reaching for food more eagerly is

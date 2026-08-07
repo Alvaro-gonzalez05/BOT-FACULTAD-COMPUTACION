@@ -223,3 +223,17 @@ def test_it_values_food_enough_to_win_short_matches():
     # this and the bot stops respecting the board: doubling it went 9W-14L short.
     assert 18.0 <= weights.food_distance <= 24.0
     assert weights.food_race >= weights.food_distance * 3
+
+
+def test_pushing_away_from_a_conceded_apple_was_measured_and_dropped():
+    """Kept as a note: the fix for a real problem broke the core promise.
+
+    An audit of 3045 real turns found the bot moving towards the opponent's
+    apple 29% of the time, so a penalty for closing on one looked like the
+    missing half of "give up the apples you lose". It won on two seed sets and
+    on a third it crashed three times in 24 matches, where every setting
+    without it crashed none.
+    """
+    from snakebot.search import Weights
+
+    assert not hasattr(Weights(), "conceded_penalty")

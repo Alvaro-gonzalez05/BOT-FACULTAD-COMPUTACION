@@ -63,6 +63,15 @@ class Weights:
     # 35W-10L with it against 41W-7L without, worse against every single one.
     # Trailing late is exactly when a snake can least afford to take the risks
     # that catching up requires.
+    # Nor is there a penalty for closing on an apple already conceded. An audit
+    # of 3045 real turns found the bot moving towards the opponent's apple 29%
+    # of the time, so pushing it away looked like the missing half of "give up
+    # the ones you lose". At a weight of 10 it won on two seed sets (42W-3L
+    # against 34W-8L on one) -- and on a third it **crashed three times in 24
+    # matches** where every setting without it crashed none. Pushing a snake
+    # away from a region is pushing it somewhere, and sometimes that somewhere
+    # kills it. No amount of apples is worth the one property this bot promises.
+    #
     # Nor is there a `second_apple` weight. Valuing the next apple after the
     # nearest one sounded equally right -- food collection is a route, not a
     # trip -- and measured 10W/6L against 13W/3L without it. Both ideas came
