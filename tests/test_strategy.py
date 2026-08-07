@@ -205,3 +205,21 @@ def test_looking_past_the_nearest_apple_was_measured_and_dropped():
     from snakebot.search import Weights
 
     assert not hasattr(Weights(), "second_apple")
+
+
+def test_it_values_food_enough_to_win_short_matches():
+    """The fix for a real weakness: it was too slow off the mark.
+
+    Over 120 moves against the rival gauntlet the bot went 6W-14L, while the
+    same code over 300 moves went 17W-3L -- it spent the opening taking space
+    while the opponent took apples and never got the time back. Raising the food
+    weights by half fixed both ends: 12W-6L short, 22W-2L long.
+    """
+    from snakebot.search import Weights
+
+    weights = Weights()
+    # An apple is worth 100 points, so a food weight of 21 means a five-cell
+    # detour already costs more than the apple at the end of it. Much beyond
+    # this and the bot stops respecting the board: doubling it went 9W-14L short.
+    assert 18.0 <= weights.food_distance <= 24.0
+    assert weights.food_race >= weights.food_distance * 3

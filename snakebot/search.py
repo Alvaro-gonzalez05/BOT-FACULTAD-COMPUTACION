@@ -43,8 +43,15 @@ class Weights:
     space: float = 4.0
     trapped_penalty: float = 900.0
     trapped_bonus: float = 900.0
-    food_distance: float = 14.0
-    food_race: float = 60.0
+    # Raised by half from 14/60. The bot was losing short matches badly -- 6W-14L
+    # over 120 moves against the rival gauntlet where 300-move matches went
+    # 17W-3L -- because it spent the opening taking space while the opponent
+    # took apples, and never got the time back. Eating harder fixed both ends at
+    # once: 12W-6L short and 22W-2L long. Doubling instead of raising by half
+    # was better long (23W-0L) and much worse short (9W-14L), which is the shape
+    # of a bot that has stopped respecting the board.
+    food_distance: float = 21.0
+    food_race: float = 90.0
     length: float = 20.0
     score: float = 1.0
     opponent_choke: float = 2.0

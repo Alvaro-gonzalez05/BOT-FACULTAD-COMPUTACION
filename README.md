@@ -249,6 +249,23 @@ inert, with 1.0, 0.95 and 0.85 all producing the same crash rate. And the crash
 rate floors at about 6%: this is a heuristic, not a searcher, so an opponent
 measured below that just gets the most careful setting.
 
+### Short matches: a slow opening, now fixed
+
+The bot went **6W-14L over 120 moves** against the rival gauntlet while the same
+code went **17W-3L over 300**. Its average score was *higher* than the
+opponent's at 150 moves and it still lost more often — it won big and lost
+narrowly, over and over. The cause was the opening: it spent early moves taking
+space while the opponent took apples, and in a short match there is no time to
+get that back.
+
+Raising the food weights by half (14 -> 21, 60 -> 90) fixed both ends at once —
+**12W-6L short and 22W-2L long** — so this was never a trade between lengths.
+Doubling them instead was better long (23W-0L) and much worse short (9W-14L),
+which is the shape of a bot that has stopped respecting the board.
+
+Current gauntlet result: **32W / 4L / 0D, no crashes**, unbeaten against four of
+the six rivals.
+
 ### Two ideas that sounded right and were measured wrong
 
 Both came out of the correct diagnosis above — every loss is on points — and
