@@ -566,6 +566,32 @@
           "food_chances": 149
         }
       ]
+    },
+    "Alvarinho": {
+      "name": "Alvarinho",
+      "samples": [
+        {
+          "game_id": "e4fe3702-9276-11f1-b686-a2aa0928bc73",
+          "turns": 300,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 100,
+          "food_chances": 299
+        }
+      ]
+    },
+    "Bot2": {
+      "name": "Bot2",
+      "samples": [
+        {
+          "game_id": "f62d91b2-9276-11f1-b686-a2aa0928bc73",
+          "turns": 150,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 81,
+          "food_chances": 149
+        }
+      ]
     }
   }
 }

@@ -201,6 +201,49 @@ it is never logged. It is still a session credential: anyone holding it can act
 as you until it expires. Without it the button falls back to the websocket
 action and the page says plainly that the server will probably ignore it.
 
+### Playing when nobody else is online
+
+Most of the time the lobby is empty. Two of your own bots fix that:
+
+```powershell
+.\duel.ps1
+```
+
+It brings up both, opens the panel for the first, and stops both on `Ctrl+C`.
+It needs a second bot registered on the site (**My Bots → New bot**, it gets its
+own token) and four lines in `.env` — see `.env.example`:
+
+```
+CODECHALLENGE_TOKEN_2=eyJ...
+CODECHALLENGE_BOT=Alvarinho
+CODECHALLENGE_BOT_2=Alvarinho2
+CODECHALLENGE_SESSION=...
+```
+
+`CODECHALLENGE_BOT` is new and matters here specifically: with two of your bots
+online, the website's form would otherwise pick whichever it lists first, so who
+challenges whom was a coin flip. Neither bot challenges on connect — that is
+still the websocket action the server ignores — so press **Challenge** on the
+panel, or use the site's own `/challenge` page.
+
+Three things a duel deliberately keeps away from real play, and the reasons are
+the same ones the rest of this README keeps running into:
+
+- **Separate transcript directories** (`duel-a/`, `duel-b/`). Both sides of a
+  match share one `game_id`, so a shared directory means each side overwrites
+  the other's log.
+- **`--opponent-book none`.** A duel says nothing about the real rivals, and
+  `opponents.json` is what `rivals` builds its sparring partners from — leaving
+  your own bot in there turns the one benchmark that is not self-play into self-
+  play. It already has one `Alvarinho2` sample from an earlier duel; at five it
+  would have become a sparring partner.
+- **A smaller time budget** (`0.08`). Two searchers on one machine queue for the
+  same cores, which is the concurrency bug from further down this file wearing a
+  different hat. A late move is penalised.
+
+The flag works outside the script too: `--opponent-book none` on any `play`, and
+`--opponent-book somewhere-else.json` to keep a separate book.
+
 ### Watching a match back
 
 ```bash
@@ -243,6 +286,11 @@ apples short. Survival is solved; appetite is not. That is the one number to
 work on, and it means a change that makes the bot safer is a change aimed at the
 wrong problem.
 
+That diagnosis stood for a long time without a cause attached to it. There was
+one, and it was not subtle once measured: the evaluation was scoring an apple on
+the board as worth more than an apple eaten. See *The evaluation told it not to
+eat* below.
+
 ### The rival gauntlet
 
 ```bash
@@ -283,8 +331,76 @@ Raising the food weights by half (14 -> 21, 60 -> 90) fixed both ends at once �
 Doubling them instead was better long (23W-0L) and much worse short (9W-14L),
 which is the shape of a bot that has stopped respecting the board.
 
-Current gauntlet result: **32W / 4L / 0D, no crashes**, unbeaten against four of
-the six rivals.
+Note that `food_distance` no longer means what it meant here: it is a bounded
+closeness bonus now, not a per-cell penalty, so the numbers above describe a
+term that has since been replaced. See *The evaluation told it not to eat*.
+
+### The evaluation told it not to eat
+
+The single worst bug found so far, and it hid behind a plausible design for as
+long as it did because every part of it looked reasonable on its own.
+
+A real match (`logs/game_f62d91b2`, lost 249-348 with nobody crashing) went like
+this: from turn 19 to the end, the bot repeated a **six-move cycle** — up,
+right, right, down, left, left — around a 2x3 rectangle. Its head visited **30
+of the board's 225 cells** in 150 turns; 80% of its moves re-entered a cell it
+had already been on. It ate **one apple all match** while an uncontested one sat
+two steps away the whole time, and lost by 99 points, which is one apple.
+
+It was not confused, and it was not short of depth. It was maximising exactly
+what the evaluation asked for:
+
+```
+standing one step from the apple : -52.8
+having just eaten it             : -233.2
+```
+
+**Eating cost it 180 points.** Stepping away and eating nothing scored -88.7,
+better than eating. An orbit next to food was the genuine optimum of that
+evaluation, and no amount of search could have found its way out.
+
+The cause is structural, and it is worth stating as a rule because it is easy to
+reintroduce: **an apple carries positional value while it sits on the board, and
+eating takes that value off the board along with the apple.** Add up what an
+apple was worth positionally under the old weights:
+
+- `food_distance` was linear, 21 a cell. Eating moved the nearest apple from one
+  cell away to twelve: **-231**.
+- `food_race` paid 90 for a won race with no discount, and eating forfeits the
+  claim along with the apple: **-77**.
+
+That is 308 of positional value against the 120 that eating pays (100 of score,
+20 of length). Any term you can farm by standing still will outbid actually
+scoring, given a big enough coefficient.
+
+Three changes, each aimed at that arithmetic:
+
+- **`food_distance` is a bounded closeness bonus**, not a linear penalty. Bounded
+  means the collapse on eating cannot exceed the weight.
+- **`food_race` is discounted by distance.** A race won by one step at thirteen
+  cells is a promise, not a fact, and a promise can be held forever.
+- **`score` went from 1.0 to 3.0.** It is the only term that records something
+  that actually happened, and it has to outweigh the promise. At 1.0 and at 2.0
+  the bot still walked away from the apple at every depth from 4 to 12; at 3.0
+  it takes it at every depth.
+
+Measured over 96 gauntlet matches, two seeds (the gauntlet is deterministic —
+fixed depth, no time cutoff — so these are exact, not noisy):
+
+| Seed | Before | After |
+| --- | --- | --- |
+| 4200 | 44W / 4L / 0D | 44W / 2L / 2D |
+| 777 | 43W / 5L / 0D | **48W / 0L / 0D** |
+| total | 87W / 9L / 0D | **92W / 2L / 2D** |
+
+No crashes in any of the 192 matches either way. Read the seeds separately
+before trusting this: on 4200 alone it is a single point of 48 and would be
+**rejected** by the ladder's own promotion rule, since the wins are level at 44
+and two of them turned into draws. Seed 777 is what makes the case, and the
+direct measurement above is what makes it believable.
+
+`tests/test_appetite.py` pins the invariant down: **eating an apple must raise
+the evaluation**. That test is the one to keep, whatever happens to the weights.
 
 ### Conceding apples: the diagnosis was right, the cure was not
 
@@ -468,6 +584,7 @@ python run.py play --help
 | `--accept-from OPPONENT` | everyone | Only accept challenges from these accounts. |
 | `--email you@example.com` | – | Makes the win/loss record exact. |
 | `--log-dir` | `logs` | `game_<id>.log` transcripts, same format as the reference client. |
+| `--opponent-book` | `opponents.json` | Where the profiles live. `none` neither reads nor writes them — what a duel between your own bots should use. |
 | `--quiet-board` | off | Stop printing the live board. |
 
 ## Tests
