@@ -81,6 +81,16 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="ignore champion.json and play with the built-in weights",
     )
+    play.add_argument(
+        "--dashboard",
+        nargs="?",
+        type=int,
+        const=8720,
+        default=None,
+        metavar="PORT",
+        help="serve a local control panel on 127.0.0.1:PORT (default 8720): "
+        "challenge people and watch every live board",
+    )
     play.add_argument("-v", "--verbose", action="store_true", help="debug logging")
 
     simulate = subcommands.add_parser("simulate", help="play offline matches against a baseline")
@@ -380,8 +390,24 @@ def run_play(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     client = BotClient(config)
     challenges = [(opponent, args.game) for opponent in args.challenge]
 
+    if args.dashboard:
+        from snakebot.dashboard import Dashboard, challenge_sender, serve
+
+        panel = Dashboard()
+        config.dashboard = panel
+
+        async def with_panel() -> None:
+            loop = asyncio.get_running_loop()
+            serve(panel, args.dashboard, challenge_sender(client, loop, args.game))
+            print(f"\n  control panel: http://127.0.0.1:{args.dashboard}\n", flush=True)
+            await client.run(challenges)
+
+        runner = with_panel()
+    else:
+        runner = client.run(challenges)
+
     try:
-        asyncio.run(client.run(challenges))
+        asyncio.run(runner)
     except KeyboardInterrupt:
         print(f"\nstopped. record: {client.scoreboard}")
     return 0

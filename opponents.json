@@ -540,6 +540,19 @@
           "food_chances": 95
         }
       ]
+    },
+    "bautibot": {
+      "name": "bautibot",
+      "samples": [
+        {
+          "game_id": "ebfc643a-921b-11f1-b686-a2aa0928bc73",
+          "turns": 150,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 67,
+          "food_chances": 149
+        }
+      ]
     }
   }
 }

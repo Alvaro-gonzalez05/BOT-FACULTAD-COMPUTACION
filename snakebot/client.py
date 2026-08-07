@@ -64,6 +64,8 @@ class ClientConfig:
     # Where what we learn about each opponent accumulates. Set to None to
     # play without reading or writing it.
     opponent_book: str | None = "opponents.json"
+    # Set by `run.py play --dashboard`; the client only ever writes to it.
+    dashboard: Any = None
 
 
 @dataclass
@@ -121,6 +123,8 @@ class BotClient:
                     self._websocket = websocket
                     backoff = self.config.min_backoff
                     log.info("connected - waiting for challenges")
+                    if self.config.dashboard:
+                        self.config.dashboard.connected = True
                     for opponent, game in pending_challenges:
                         await self._send(protocol.challenge(opponent, game))
                     pending_challenges = []
@@ -133,6 +137,8 @@ class BotClient:
                 backoff = min(backoff * 2, self.config.max_backoff)
             finally:
                 self._websocket = None
+                if self.config.dashboard:
+                    self.config.dashboard.connected = False
 
     async def _consume(self, websocket: Any) -> None:
         async for raw in websocket:
@@ -155,6 +161,8 @@ class BotClient:
             self._spawn(self._handle_game_over(event))
         elif event.name in (protocol.EVENT_LIST_USERS, protocol.EVENT_UPDATE_USER_LIST):
             self.online_users = list(event.data.get("users", []))
+            if self.config.dashboard:
+                self.config.dashboard.online = list(self.online_users)
             log.debug("online: %s", ", ".join(self.online_users) or "(nobody)")
         elif event.name == protocol.EVENT_ERROR:
             log.error("server error: %s", event.data)
@@ -248,6 +256,7 @@ class BotClient:
             self._report_what_we_know(rival)
 
         strategy = self._strategies[key]
+        rival_name = data.get("player_2" if tracker.my_side == "A" else "player_1", "?")
         try:
             position = tracker.observe(data)
         except Exception as error:  # noqa: BLE001 - never forfeit on a parse bug
@@ -270,6 +279,10 @@ class BotClient:
             decision = Decision(_any_legal(position), 0.0, 0, 0, 0.0, doomed=True)
 
         tracker.record_sent(decision.direction)
+        if self.config.dashboard:
+            self.config.dashboard.update(
+                game_id, rival_name, position, decision.direction.wire_name, tracker.turns
+            )
         if self.config.print_board:
             self._print_turn(tracker, position, decision, data)
         return tracker.calibration.wire_name(decision.direction)
@@ -291,6 +304,9 @@ class BotClient:
 
         outcome = "draw" if len(sides) > 1 else self._outcome(data, tracker)
         self.scoreboard.record(outcome)
+        if self.config.dashboard:
+            self.config.dashboard.finish(game_id, outcome.upper())
+            self.config.dashboard.record = str(self.scoreboard)
         if path:
             self._learn_from(path)
         log.info(

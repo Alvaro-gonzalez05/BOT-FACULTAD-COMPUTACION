@@ -157,6 +157,30 @@ many games it saw. What *does* repeat is the opponents: the same handful of bots
 with stable habits, match after match. Measuring those habits costs a few hundred
 bytes each and is the part of "learning" that actually pays.
 
+### The control panel
+
+```bash
+python run.py play <TOKEN> --dashboard      # then open http://127.0.0.1:8720
+```
+
+A local page that lists who is online and draws **every live match at once** —
+five concurrent games are five boards updating side by side, each with both
+snakes, the apples, our route to the nearest one, room-versus-length for each
+player and a `THEY ARE SEALED IN` banner when a trap closes.
+
+It is deliberately dependency-free: a standard-library HTTP server, one HTML
+page, a polling fetch. Adding a web framework to a bot whose job is to answer a
+websocket inside 150ms is not a trade worth making.
+
+It binds to `127.0.0.1` only — it holds your token and can start matches, so it
+is not something to expose to a network.
+
+**The Challenge button is unreliable, and the page says so.** It sends the
+documented `challenge` websocket action, which this server has never once acted
+on — not against another bot, not in self-play. If no match appears within a few
+seconds the page tells you to use the website's own Challenge page instead. The
+panel's real value is the live view; challenges still come in fine from others.
+
 ### Watching a match back
 
 ```bash
