@@ -3,8 +3,9 @@ venv/
 __pycache__/
 *.py[cod]
 .pytest_cache/
-logs/
-game_*.log
+# logs/ is deliberately tracked: the transcripts are what opponents.json is
+# derived from, so without them a fresh clone can read the profiles but cannot
+# rebuild or audit them.
 
 # start scripts may embed your personal bot token
 start.local.*
