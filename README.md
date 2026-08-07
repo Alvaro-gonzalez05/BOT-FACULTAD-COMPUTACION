@@ -175,11 +175,19 @@ websocket inside 150ms is not a trade worth making.
 It binds to `127.0.0.1` only — it holds your token and can start matches, so it
 is not something to expose to a network.
 
-**The Challenge button is unreliable, and the page says so.** It sends the
-documented `challenge` websocket action, which this server has never once acted
-on — not against another bot, not in self-play. If no match appears within a few
-seconds the page tells you to use the website's own Challenge page instead. The
-panel's real value is the live view; challenges still come in fine from others.
+**Making the Challenge button work.** The documented `challenge` websocket
+action has never once started a match on this server, so the button drives the
+website's own form instead — a Django POST needing a CSRF token and a logged-in
+session, which a bot process does not have. It borrows yours:
+
+1. Open the site, press F12 → Application → Cookies
+2. Copy the value of `sessionid`
+3. Put it in `.env` as `CODECHALLENGE_SESSION=...`
+
+`.env` is gitignored, the value is sent only back to the site it came from, and
+it is never logged. It is still a session credential: anyone holding it can act
+as you until it expires. Without it the button falls back to the websocket
+action and the page says plainly that the server will probably ignore it.
 
 ### Watching a match back
 

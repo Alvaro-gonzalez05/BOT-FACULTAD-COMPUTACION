@@ -255,3 +255,31 @@ def test_a_single_game_keeps_the_whole_budget(tmp_path):
     client = make_client(tmp_path, time_budget=0.4)
     asyncio.run(drive(client, [your_turn(game_id="g_1", turn_token="t_a")]))
     assert client._strategies[("g_1", "A")].search.time_budget == 0.4
+
+
+def test_the_web_challenger_says_plainly_when_the_session_is_no_good():
+    """A dead cookie must produce a sentence, not a stack trace on the page."""
+    import pytest
+
+    from snakebot.challenge_web import ChallengeError, WebChallenger
+
+    challenger = WebChallenger(session="")
+    assert not challenger.configured
+    with pytest.raises(ChallengeError):
+        WebChallenger(session="x")._bots_from("<html>no form here</html>")
+
+
+def test_the_web_challenger_reads_both_dropdowns():
+    from snakebot.challenge_web import WebChallenger
+
+    page = """
+      <input name="csrfmiddlewaretoken" value="tok123">
+      <select name="bot1"><option value="0">Alvarinho</option></select>
+      <select name="bot2">
+        <option value="0">Alvarinho</option>
+        <option value="2">rival</option>
+      </select>
+    """
+    bots = WebChallenger(session="x")._bots_from(page)
+    assert bots["bot1"] == {"Alvarinho": "0"}
+    assert bots["bot2"] == {"Alvarinho": "0", "rival": "2"}

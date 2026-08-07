@@ -553,6 +553,19 @@
           "food_chances": 149
         }
       ]
+    },
+    "Alvarinho2": {
+      "name": "Alvarinho2",
+      "samples": [
+        {
+          "game_id": "d63ee46a-9220-11f1-b686-a2aa0928bc73",
+          "turns": 150,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 77,
+          "food_chances": 149
+        }
+      ]
     }
   }
 }

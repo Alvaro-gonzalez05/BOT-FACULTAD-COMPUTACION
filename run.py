@@ -398,7 +398,11 @@ def run_play(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
 
         async def with_panel() -> None:
             loop = asyncio.get_running_loop()
-            serve(panel, args.dashboard, challenge_sender(client, loop, args.game))
+            sender = challenge_sender(
+                client, loop, args.game, dashboard=panel,
+                session=os.environ.get("CODECHALLENGE_SESSION", ""),
+            )
+            serve(panel, args.dashboard, sender)
             print(f"\n  control panel: http://127.0.0.1:{args.dashboard}\n", flush=True)
             await client.run(challenges)
 

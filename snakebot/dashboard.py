@@ -82,6 +82,9 @@ class Dashboard:
         self.record = "0W / 0L / 0D"
         self.connected = False
         self.pending_challenges: list[str] = []
+        # Last thing the Challenge button did, shown on the page.
+        self.note = ""
+        self.can_challenge = False
 
     # -- called from the bot ---------------------------------------------
 
@@ -117,6 +120,8 @@ class Dashboard:
             "record": self.record,
             "online": list(self.online),
             "boards": [b.as_dict() for b in self.boards.values()],
+            "note": self.note,
+            "can_challenge": self.can_challenge,
         }
 
 
@@ -168,17 +173,55 @@ def serve(dashboard: Dashboard, port: int, on_challenge) -> ThreadingHTTPServer:
     return server
 
 
-def challenge_sender(client, loop: asyncio.AbstractEventLoop, game: str = "snake"):
-    """Bridge a button press on the page to the bot's asyncio loop."""
+def challenge_sender(
+    client,
+    loop: asyncio.AbstractEventLoop,
+    game: str = "snake",
+    dashboard: "Dashboard | None" = None,
+    session: str = "",
+):
+    """Bridge a button press on the page to whatever actually starts a match.
+
+    The website's form when a session cookie is configured -- that is the only
+    route that has ever worked -- and the documented websocket action otherwise,
+    which is kept so the button still does *something* on a server that honours
+    it.
+    """
     from . import protocol
+    from .challenge_web import ChallengeError, WebChallenger
+
+    web = WebChallenger(session=session) if session else None
+    if dashboard is not None:
+        dashboard.can_challenge = True
 
     def send(opponent: str) -> None:
+        if web is not None:
+            try:
+                started = web.challenge(opponent, game=game)
+                if dashboard is not None:
+                    dashboard.note = f"challenged {started}"
+                return
+            except ChallengeError as error:
+                # The message is about the site or the session, never the cookie.
+                log.warning("challenge failed: %s", error)
+                if dashboard is not None:
+                    dashboard.note = str(error)
+                return
+            except Exception as error:  # noqa: BLE001 - a button must not kill the bot
+                log.warning("challenge failed: %s", error)
+                if dashboard is not None:
+                    dashboard.note = "challenge failed - see the console"
+                return
+
         if client._websocket is None:
-            log.warning("cannot challenge %s: not connected", opponent)
+            if dashboard is not None:
+                dashboard.note = "not connected"
             return
-        asyncio.run_coroutine_threadsafe(
-            client._send(protocol.challenge(opponent, game)), loop
-        )
-        log.info("challenge sent to %s", opponent)
+        asyncio.run_coroutine_threadsafe(client._send(protocol.challenge(opponent, game)), loop)
+        if dashboard is not None:
+            dashboard.note = (
+                "sent over the websocket - this server usually ignores it. "
+                "Set CODECHALLENGE_SESSION in .env to use the website form."
+            )
 
     return send
