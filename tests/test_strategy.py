@@ -157,11 +157,16 @@ def test_an_apple_it_cannot_reach_in_time_stops_pulling():
         remaining_moves=4,                  # only two moves each
     )
     plenty = Position(**{**vars(far), "remaining_moves": 200})
+    starving = Position(**{**vars(far), "food": frozenset()})
 
     search = Search(time_budget=NO_CUTOFF, max_depth=2)
-    # With time to spare the apple is worth something; with none it is ignored,
-    # so the position without time must not be rated worse for the distance.
-    assert search.evaluate(far) >= search.evaluate(plenty)
+    # Ignored means ignored: with no time to reach it, the apple must score the
+    # same as no apple at all. This used to be written as `far >= plenty`, which
+    # said the same thing only while food was a *penalty* for being far from it.
+    # Now that closeness is a bonus the comparison flips, so state the property
+    # itself rather than a consequence of which way the sign happened to point.
+    assert search.evaluate(far) == search.evaluate(starving)
+    assert search.evaluate(plenty) > search.evaluate(far)
 
 
 def test_a_reachable_apple_still_counts_near_the_end():
@@ -218,11 +223,13 @@ def test_it_values_food_enough_to_win_short_matches():
     from snakebot.search import Weights
 
     weights = Weights()
-    # An apple is worth 100 points, so a food weight of 21 means a five-cell
-    # detour already costs more than the apple at the end of it. Much beyond
-    # this and the bot stops respecting the board: doubling it went 9W-14L short.
-    assert 18.0 <= weights.food_distance <= 24.0
-    assert weights.food_race >= weights.food_distance * 3
+    # This used to assert 18 <= food_distance <= 24, on the reasoning that "a
+    # five-cell detour should cost more than the apple at the end of it". That
+    # reasoning was the bug: the term was linear, so *eating* also moved the
+    # nearest apple five-plus cells away and cost more than the apple was worth.
+    # The real requirement is not a number, it is that food still pulls at all.
+    assert weights.food_distance > 0
+    assert weights.food_race > 0
 
 
 def test_pushing_away_from_a_conceded_apple_was_measured_and_dropped():
@@ -233,6 +240,12 @@ def test_pushing_away_from_a_conceded_apple_was_measured_and_dropped():
     missing half of "give up the apples you lose". It won on two seed sets and
     on a third it crashed three times in 24 matches, where every setting
     without it crashed none.
+
+    The audit's diagnosis -- food conceded to territory and space, which do not
+    know an apple is lost -- is the same one `test_appetite.py` came at from the
+    other side. Changing what is rewarded worked where pushing the snake around
+    did not: pushing it away from a region is pushing it somewhere, and the
+    somewhere is what killed it.
     """
     from snakebot.search import Weights
 

@@ -18,14 +18,59 @@ from .heuristics import INFINITE, decay_map, distance_map, reachable_space
 WIN = 1e9
 LOSS = -1e9
 
+# How far off a food race can be before winning it stops meaning much. A race
+# settled in two moves is nearly a fact; one "won" by a single step at twelve is
+# a promise, and the difference matters because a promise can be held forever
+# without ever being cashed.
+#
+# That is not hypothetical. A real match (logs/game_f62d91b2, lost 249-348 with
+# nobody crashing) had the bot orbit a 2x3 rectangle for 130 turns with an apple
+# two steps away, because stepping towards it flipped a *thirteen*-step-away
+# apple into the opponent's column. Undiscounted, that flip was worth 180 points
+# against the 100 an apple actually scores, so the bot maximised its claims
+# instead of its score. Nothing else in the evaluation can be farmed by standing
+# still: space and territory are bounded by the board, and length and score only
+# move when something happens.
+RACE_HORIZON = 6.0
+
+# The same idea for "how close am I to the apple I am going for". It used to be
+# a *linear* penalty, `-food_distance * cells`, which had a fatal consequence:
+# eating moves the nearest apple from one cell away to about twelve, so the term
+# collapsed by ~230 while the apple itself paid 100 in score and 20 in length.
+# Measured on the position that lost the match: standing next to the apple
+# evaluated at -52.8, eating it at -233.2. The bot was not confused, it was
+# maximising exactly what we asked for -- and what we asked for said not to eat.
+#
+# Bounded means the collapse cannot exceed the weight, so eating is always a
+# gain. The horizon is short on purpose: at two cells the difference between
+# apples is tactical, at twelve it is noise you will re-plan long before living.
+FOOD_HORIZON = 4.0
+
+
+def _race_credit(distances: list[int]) -> float:
+    """What a set of won food races is worth, discounted by how far off each is."""
+    return sum(RACE_HORIZON / (RACE_HORIZON + d) for d in distances)
+
+
+def _closeness(distance: int) -> float:
+    """1.0 on top of the apple, falling away smoothly, never below 0."""
+    return FOOD_HORIZON / (FOOD_HORIZON + distance)
+
 
 @dataclass(frozen=True)
 class Weights:
     """Relative importance of each evaluation term.
 
-    The units are roughly *match points*, which keeps the numbers honest: food
-    is worth 100, so ``food_distance`` at 14 means eight cells of detour costs
-    about as much as the apple at the end of it.
+    The units are roughly *match points*, which keeps the numbers honest: an
+    apple is worth 100.
+
+    The one invariant everything here has to respect: **eating must raise the
+    evaluation**. It is easy to break by accident, because an apple carries
+    positional value -- being near it, winning the race for it -- and eating it
+    takes that value off the board along with the apple. When the positional
+    value of an apple exceeds what eating it pays, the bot's best move is to
+    stand next to food forever, and that is not a hypothetical: it is what lost
+    ``logs/game_f62d91b2``. ``tests/test_appetite.py`` pins the invariant down.
 
     These defaults come from sweeps against the greedy baseline (see the README):
     ``territory`` at 1 beat 2, 3 and 6 outright, because a bot that chases space
@@ -43,17 +88,20 @@ class Weights:
     space: float = 4.0
     trapped_penalty: float = 900.0
     trapped_bonus: float = 900.0
-    # Raised by half from 14/60. The bot was losing short matches badly -- 6W-14L
-    # over 120 moves against the rival gauntlet where 300-move matches went
-    # 17W-3L -- because it spent the opening taking space while the opponent
-    # took apples, and never got the time back. Eating harder fixed both ends at
-    # once: 12W-6L short and 22W-2L long. Doubling instead of raising by half
-    # was better long (23W-0L) and much worse short (9W-14L), which is the shape
-    # of a bot that has stopped respecting the board.
-    food_distance: float = 21.0
+    # No longer a per-cell penalty but the size of a bounded closeness bonus --
+    # see FOOD_HORIZON. 21 was right when the term was linear (it had been
+    # raised by half from 14 to stop the bot losing short matches, 6W-14L over
+    # 120 moves against 17W-3L over 300); as a bounded bonus that same 21 would
+    # be almost inert, so it is scaled to the range the term now spans.
+    food_distance: float = 60.0
     food_race: float = 90.0
     length: float = 20.0
-    score: float = 1.0
+    # Three, not one. The score is the only term that records something that has
+    # actually happened, and it has to outweigh the positional value an apple
+    # carries while it is still on the board -- otherwise eating reads as a loss.
+    # At 1.0 it did: standing beside an apple evaluated 180 points better than
+    # taking it.
+    score: float = 3.0
     opponent_choke: float = 2.0
 
     # There is no endgame-hunger dial. Across 54 real matches the bot crashed
@@ -300,7 +348,7 @@ class Search:
         nearest_any = INFINITE
         nearest_theirs = INFINITE
         mine_won: list[int] = []
-        ours = theirs = 0
+        theirs_won: list[int] = []
         for food in position.food:
             mine = my_distances.get(food, INFINITE)
             yours = opp_distances.get(food, INFINITE)
@@ -310,10 +358,9 @@ class Search:
             # Ties go to whoever is about to move.
             if mine < yours or (mine == yours and position.my_turn):
                 if mine < INFINITE:
-                    ours += 1
                     mine_won.append(mine)
             elif yours < INFINITE:
-                theirs += 1
+                theirs_won.append(yours)
                 nearest_theirs = min(nearest_theirs, yours)
 
         mine_won.sort()
@@ -322,11 +369,11 @@ class Search:
         # we win none, since an opponent that misplays still leaves it there.
         target = mine_won[0] if mine_won else nearest_any
         if target < INFINITE:
-            value -= w.food_distance * target
+            value += w.food_distance * _closeness(target)
         if nearest_theirs < INFINITE:
-            value += w.food_distance * 0.5 * nearest_theirs
+            value -= w.food_distance * 0.5 * _closeness(nearest_theirs)
         # Owning more of the board's apples than they do, not just being nearest
-        # to one of them.
-        value += w.food_race * (ours - theirs)
+        # to one of them -- discounted by how far off each race is to settle.
+        value += w.food_race * (_race_credit(mine_won) - _race_credit(theirs_won))
 
         return value
