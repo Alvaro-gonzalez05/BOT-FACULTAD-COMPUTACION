@@ -10,23 +10,35 @@ run past a survival check before it is sent.
 
 ## Quick start
 
-```bash
-python -m venv .venv
-.venv/Scripts/activate            # Windows;  source .venv/bin/activate on macOS/Linux
-pip install -r requirements.txt
-python run.py play <YOUR_BOT_TOKEN>
+Once, create a `.env` next to this file:
+
+```
+CODECHALLENGE_TOKEN=eyJ...
 ```
 
-Get the token from **My Bots → Show token** on the site. You can also put it in
-the `CODECHALLENGE_TOKEN` environment variable and just run `python run.py play`.
+The token comes from **My Bots → Show token** on the site. `.env` is gitignored;
+never pass a token on the command line of a shared machine, it lands in the
+shell history.
 
-The bot then sits there waiting. Go to **Challenge** on the site, pick your bot,
-an online opponent and *Snake* — the bot accepts and plays on its own. To start
-the match from the bot instead:
+Then, every time:
 
-```bash
-python run.py play <YOUR_BOT_TOKEN> --challenge rival@example.com
+```powershell
+.\start.ps1              # Windows
+./start.sh               # macOS / Linux
 ```
+
+That is the whole thing. It creates the virtualenv on first run, connects the
+bot, starts the control panel and opens `http://127.0.0.1:8720` in your browser.
+Leave it running: it accepts challenges on its own and draws every match live.
+`Ctrl+C` stops it.
+
+```powershell
+.\start.ps1 -NoPanel      # console only
+.\start.ps1 -Port 9000    # a different port
+```
+
+To send challenges from the panel rather than the website, add your session
+cookie to `.env` as well — see [the control panel](#the-control-panel).
 
 ### Check it before you play
 
