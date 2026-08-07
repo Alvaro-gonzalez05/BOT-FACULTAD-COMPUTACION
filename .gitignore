@@ -7,6 +7,11 @@ __pycache__/
 # derived from, so without them a fresh clone can read the profiles but cannot
 # rebuild or audit them.
 
+# duel-a/ and duel-b/ are two of your own bots playing each other. They are not
+# evidence about anybody's rival, which is the only thing logs/ is kept for.
+duel-a/
+duel-b/
+
 # start scripts may embed your personal bot token
 start.local.*
 .env

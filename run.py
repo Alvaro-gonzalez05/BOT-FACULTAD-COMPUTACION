@@ -70,6 +70,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     play.add_argument("--max-depth", type=int, default=14, help="maximum search depth in plies")
     play.add_argument("--log-dir", default="logs", help="where to write game_<id>.log")
+    play.add_argument(
+        "--opponent-book",
+        default="opponents.json",
+        help="where the opponent profiles live; 'none' to neither read nor write them. "
+        "Use 'none' when both sides are your own bots: a duel teaches nothing about "
+        "the real rivals and turns your own bot into a sparring partner for `rivals`",
+    )
     play.add_argument("--quiet-board", action="store_true", help="do not print the live board")
     play.add_argument(
         "--champion",
@@ -386,6 +393,7 @@ def run_play(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         my_email=args.email,
         log_dir=args.log_dir,
         print_board=not args.quiet_board,
+        opponent_book=None if args.opponent_book.lower() == "none" else args.opponent_book,
     )
     client = BotClient(config)
     challenges = [(opponent, args.game) for opponent in args.challenge]
@@ -401,6 +409,7 @@ def run_play(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
             sender = challenge_sender(
                 client, loop, args.game, dashboard=panel,
                 session=os.environ.get("CODECHALLENGE_SESSION", ""),
+                my_bot=os.environ.get("CODECHALLENGE_BOT", ""),
             )
             serve(panel, args.dashboard, sender)
             print(f"\n  control panel: http://127.0.0.1:{args.dashboard}\n", flush=True)

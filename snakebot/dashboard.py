@@ -179,6 +179,7 @@ def challenge_sender(
     game: str = "snake",
     dashboard: "Dashboard | None" = None,
     session: str = "",
+    my_bot: str = "",
 ):
     """Bridge a button press on the page to whatever actually starts a match.
 
@@ -186,6 +187,11 @@ def challenge_sender(
     route that has ever worked -- and the documented websocket action otherwise,
     which is kept so the button still does *something* on a server that honours
     it.
+
+    ``my_bot`` names which of *your* bots plays. It matters as soon as you have
+    two of them online -- the form would otherwise pick whichever the site lists
+    first, which in a duel between your own bots is a coin flip over who is the
+    challenger.
     """
     from . import protocol
     from .challenge_web import ChallengeError, WebChallenger
@@ -197,7 +203,7 @@ def challenge_sender(
     def send(opponent: str) -> None:
         if web is not None:
             try:
-                started = web.challenge(opponent, game=game)
+                started = web.challenge(opponent, my_bot=my_bot or None, game=game)
                 if dashboard is not None:
                     dashboard.note = f"challenged {started}"
                 return
