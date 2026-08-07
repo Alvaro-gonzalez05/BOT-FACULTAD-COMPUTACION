@@ -1,0 +1,545 @@
+{
+  "profiles": {
+    "marianogargiulo": {
+      "name": "marianogargiulo",
+      "samples": [
+        {
+          "game_id": "9bd733c4-91e7-11f1-b686-a2aa0928bc73",
+          "turns": 48,
+          "they_crashed": true,
+          "we_crashed": false,
+          "food_chases": 34,
+          "food_chances": 47
+        },
+        {
+          "game_id": "44fb2278-91f0-11f1-b686-a2aa0928bc73",
+          "turns": 48,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 34,
+          "food_chances": 47
+        },
+        {
+          "game_id": "d5ec6d38-91f4-11f1-b686-a2aa0928bc73",
+          "turns": 48,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 34,
+          "food_chances": 47
+        },
+        {
+          "game_id": "f2273dac-91f4-11f1-b686-a2aa0928bc73",
+          "turns": 48,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 34,
+          "food_chances": 47
+        },
+        {
+          "game_id": "2cc4e284-91f5-11f1-b686-a2aa0928bc73",
+          "turns": 48,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 34,
+          "food_chances": 47
+        },
+        {
+          "game_id": "46f46a8a-91f5-11f1-b686-a2aa0928bc73",
+          "turns": 48,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 34,
+          "food_chances": 47
+        },
+        {
+          "game_id": "91ff3870-91f5-11f1-b686-a2aa0928bc73",
+          "turns": 48,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 34,
+          "food_chances": 47
+        },
+        {
+          "game_id": "98ca9bea-91f5-11f1-b686-a2aa0928bc73",
+          "turns": 48,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 34,
+          "food_chances": 47
+        },
+        {
+          "game_id": "3abb0b28-91f7-11f1-b686-a2aa0928bc73",
+          "turns": 48,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 34,
+          "food_chances": 47
+        },
+        {
+          "game_id": "76095af8-91f8-11f1-b686-a2aa0928bc73",
+          "turns": 48,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 34,
+          "food_chances": 47
+        },
+        {
+          "game_id": "6f2dfa94-91f9-11f1-b686-a2aa0928bc73",
+          "turns": 48,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 34,
+          "food_chances": 47
+        },
+        {
+          "game_id": "f93d0252-91f9-11f1-b686-a2aa0928bc73",
+          "turns": 48,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 34,
+          "food_chances": 47
+        },
+        {
+          "game_id": "a7aa6078-91fa-11f1-b686-a2aa0928bc73",
+          "turns": 48,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 34,
+          "food_chances": 47
+        },
+        {
+          "game_id": "d42b05a8-91fa-11f1-b686-a2aa0928bc73",
+          "turns": 48,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 34,
+          "food_chances": 47
+        },
+        {
+          "game_id": "55550d68-91fb-11f1-b686-a2aa0928bc73",
+          "turns": 48,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 34,
+          "food_chances": 47
+        },
+        {
+          "game_id": "eed8e27a-9205-11f1-b686-a2aa0928bc73",
+          "turns": 46,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 35,
+          "food_chances": 45
+        }
+      ]
+    },
+    "candelariaaybar": {
+      "name": "candelariaaybar",
+      "samples": [
+        {
+          "game_id": "e7bced66-91e6-11f1-b686-a2aa0928bc73",
+          "turns": 1,
+          "they_crashed": true,
+          "we_crashed": false,
+          "food_chases": 0,
+          "food_chances": 0
+        }
+      ]
+    },
+    "lucaisgro": {
+      "name": "lucaisgro",
+      "samples": [
+        {
+          "game_id": "7154c676-91f0-11f1-b686-a2aa0928bc73",
+          "turns": 72,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 54,
+          "food_chances": 71
+        },
+        {
+          "game_id": "ad4293fc-91f0-11f1-b686-a2aa0928bc73",
+          "turns": 72,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 54,
+          "food_chances": 71
+        },
+        {
+          "game_id": "49395c96-91f1-11f1-b686-a2aa0928bc73",
+          "turns": 72,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 54,
+          "food_chances": 71
+        },
+        {
+          "game_id": "b4f45e2c-91f1-11f1-b686-a2aa0928bc73",
+          "turns": 72,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 54,
+          "food_chances": 71
+        },
+        {
+          "game_id": "e9ad4764-91f1-11f1-b686-a2aa0928bc73",
+          "turns": 72,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 54,
+          "food_chances": 71
+        },
+        {
+          "game_id": "643d143c-91f2-11f1-b686-a2aa0928bc73",
+          "turns": 72,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 54,
+          "food_chances": 71
+        }
+      ]
+    },
+    "santiagogil": {
+      "name": "santiagogil",
+      "samples": [
+        {
+          "game_id": "0659012e-91f1-11f1-b686-a2aa0928bc73",
+          "turns": 144,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 89,
+          "food_chances": 143
+        },
+        {
+          "game_id": "1531dfe0-91f1-11f1-b686-a2aa0928bc73",
+          "turns": 144,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 89,
+          "food_chances": 143
+        },
+        {
+          "game_id": "1ee56d4a-91f1-11f1-b686-a2aa0928bc73",
+          "turns": 144,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 89,
+          "food_chances": 143
+        },
+        {
+          "game_id": "1e0c4c86-91f1-11f1-b686-a2aa0928bc73",
+          "turns": 144,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 89,
+          "food_chances": 143
+        },
+        {
+          "game_id": "e3c80cee-91f1-11f1-b686-a2aa0928bc73",
+          "turns": 144,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 89,
+          "food_chances": 143
+        },
+        {
+          "game_id": "f8282944-91f1-11f1-b686-a2aa0928bc73",
+          "turns": 144,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 89,
+          "food_chances": 143
+        },
+        {
+          "game_id": "34d48e00-91f2-11f1-b686-a2aa0928bc73",
+          "turns": 144,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 89,
+          "food_chances": 143
+        },
+        {
+          "game_id": "4b8e8736-91f2-11f1-b686-a2aa0928bc73",
+          "turns": 144,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 89,
+          "food_chances": 143
+        },
+        {
+          "game_id": "a34ce378-91f2-11f1-b686-a2aa0928bc73",
+          "turns": 144,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 89,
+          "food_chances": 143
+        },
+        {
+          "game_id": "76a98784-91f4-11f1-b686-a2aa0928bc73",
+          "turns": 144,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 89,
+          "food_chances": 143
+        },
+        {
+          "game_id": "a0e6adf6-91f4-11f1-b686-a2aa0928bc73",
+          "turns": 144,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 89,
+          "food_chances": 143
+        }
+      ]
+    },
+    "joaquinrearte": {
+      "name": "joaquinrearte",
+      "samples": [
+        {
+          "game_id": "31ba00e6-91f3-11f1-b686-a2aa0928bc73",
+          "turns": 110,
+          "they_crashed": true,
+          "we_crashed": false,
+          "food_chases": 57,
+          "food_chances": 109
+        },
+        {
+          "game_id": "3d37e2ba-91f5-11f1-b686-a2aa0928bc73",
+          "turns": 110,
+          "they_crashed": true,
+          "we_crashed": false,
+          "food_chases": 57,
+          "food_chances": 109
+        },
+        {
+          "game_id": "4bdbbe54-91f5-11f1-b686-a2aa0928bc73",
+          "turns": 110,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 57,
+          "food_chances": 109
+        },
+        {
+          "game_id": "abbe92b0-91f5-11f1-b686-a2aa0928bc73",
+          "turns": 110,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 57,
+          "food_chances": 109
+        },
+        {
+          "game_id": "a14cdf8a-91f5-11f1-b686-a2aa0928bc73",
+          "turns": 110,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 57,
+          "food_chances": 109
+        },
+        {
+          "game_id": "55cc5350-91f6-11f1-b686-a2aa0928bc73",
+          "turns": 110,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 57,
+          "food_chances": 109
+        },
+        {
+          "game_id": "481c919a-91f9-11f1-b686-a2aa0928bc73",
+          "turns": 110,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 57,
+          "food_chances": 109
+        },
+        {
+          "game_id": "c772124e-91f9-11f1-b686-a2aa0928bc73",
+          "turns": 110,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 57,
+          "food_chances": 109
+        }
+      ]
+    },
+    "laureanoparente": {
+      "name": "laureanoparente",
+      "samples": [
+        {
+          "game_id": "cfa4740a-91f6-11f1-b686-a2aa0928bc73",
+          "turns": 8,
+          "they_crashed": true,
+          "we_crashed": false,
+          "food_chases": 2,
+          "food_chances": 7
+        },
+        {
+          "game_id": "95652638-91fe-11f1-b686-a2aa0928bc73",
+          "turns": 8,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 2,
+          "food_chances": 7
+        },
+        {
+          "game_id": "0f1a1f18-9201-11f1-b686-a2aa0928bc73",
+          "turns": 13,
+          "they_crashed": true,
+          "we_crashed": false,
+          "food_chases": 1,
+          "food_chances": 12
+        },
+        {
+          "game_id": "cf51b426-9201-11f1-b686-a2aa0928bc73",
+          "turns": 66,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 48,
+          "food_chances": 65
+        },
+        {
+          "game_id": "c543339c-9201-11f1-b686-a2aa0928bc73",
+          "turns": 150,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 112,
+          "food_chances": 149
+        }
+      ]
+    },
+    "luccacasucci": {
+      "name": "luccacasucci",
+      "samples": [
+        {
+          "game_id": "db739c2a-91f6-11f1-b686-a2aa0928bc73",
+          "turns": 45,
+          "they_crashed": true,
+          "we_crashed": false,
+          "food_chases": 32,
+          "food_chances": 44
+        },
+        {
+          "game_id": "fc239252-91f8-11f1-b686-a2aa0928bc73",
+          "turns": 45,
+          "they_crashed": true,
+          "we_crashed": false,
+          "food_chases": 32,
+          "food_chances": 44
+        },
+        {
+          "game_id": "034ce0c4-91f9-11f1-b686-a2aa0928bc73",
+          "turns": 45,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 32,
+          "food_chances": 44
+        },
+        {
+          "game_id": "ed57a7ea-91fd-11f1-b686-a2aa0928bc73",
+          "turns": 45,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 32,
+          "food_chances": 44
+        },
+        {
+          "game_id": "74617c4c-91ff-11f1-b686-a2aa0928bc73",
+          "turns": 45,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 32,
+          "food_chances": 44
+        },
+        {
+          "game_id": "88999c58-91ff-11f1-b686-a2aa0928bc73",
+          "turns": 45,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 32,
+          "food_chances": 44
+        },
+        {
+          "game_id": "02dfdcd8-9201-11f1-b686-a2aa0928bc73",
+          "turns": 150,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 76,
+          "food_chances": 149
+        },
+        {
+          "game_id": "a2fdcfbc-9202-11f1-b686-a2aa0928bc73",
+          "turns": 150,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 73,
+          "food_chances": 149
+        },
+        {
+          "game_id": "9810d53e-9204-11f1-b686-a2aa0928bc73",
+          "turns": 44,
+          "they_crashed": true,
+          "we_crashed": false,
+          "food_chases": 20,
+          "food_chances": 43
+        },
+        {
+          "game_id": "2865bdd4-9205-11f1-b686-a2aa0928bc73",
+          "turns": 6,
+          "they_crashed": true,
+          "we_crashed": false,
+          "food_chases": 0,
+          "food_chances": 5
+        },
+        {
+          "game_id": "2b9b33e4-9205-11f1-b686-a2aa0928bc73",
+          "turns": 6,
+          "they_crashed": true,
+          "we_crashed": false,
+          "food_chases": 1,
+          "food_chances": 5
+        },
+        {
+          "game_id": "9b6f326e-9206-11f1-b686-a2aa0928bc73",
+          "turns": 40,
+          "they_crashed": true,
+          "we_crashed": false,
+          "food_chases": 18,
+          "food_chances": 39
+        },
+        {
+          "game_id": "9ee4826e-9206-11f1-b686-a2aa0928bc73",
+          "turns": 41,
+          "they_crashed": true,
+          "we_crashed": false,
+          "food_chases": 15,
+          "food_chances": 40
+        }
+      ]
+    },
+    "eduardogarcia-puebla": {
+      "name": "eduardogarcia-puebla",
+      "samples": [
+        {
+          "game_id": "9f58241a-91fe-11f1-b686-a2aa0928bc73",
+          "turns": 7,
+          "they_crashed": true,
+          "we_crashed": false,
+          "food_chases": 0,
+          "food_chances": 6
+        }
+      ]
+    },
+    "guadalupegonzalez-hidalgo": {
+      "name": "guadalupegonzalez-hidalgo",
+      "samples": [
+        {
+          "game_id": "088f3e9e-9201-11f1-b686-a2aa0928bc73",
+          "turns": 96,
+          "they_crashed": false,
+          "we_crashed": false,
+          "food_chases": 72,
+          "food_chances": 95
+        }
+      ]
+    }
+  }
+}
