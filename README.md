@@ -420,6 +420,54 @@ can shorten the distance to their apple while genuinely pursuing something else,
 so the real figure for "wasted trips" is lower than 29%. The problem is real but
 smaller than it first looks, and it is still open.
 
+### The seal has never once happened
+
+Killing the other snake is the biggest prize in the game — `-500` for them and
+`+1000` for us, a 1500-point swing where an apple is 100 — and the evaluation
+says so: `trapped_bonus` at 900 is the largest weight in it. So raising the
+aggression looks like the obvious way to win more.
+
+It is not, and the reason is worth writing down before anyone tries again.
+
+Every setting tried scores **identically**, to the point, on both seeds:
+
+```
+opponent_choke  2 (current)   50W 2L 4D  margin +858     56W 0L 0D  margin +1216
+opponent_choke  4             50W 2L 4D  margin +858     56W 0L 0D  margin +1216
+opponent_choke  8             50W 2L 4D  margin +858     56W 0L 0D  margin +1216
+trapped_bonus   1400          50W 2L 4D  margin +858     56W 0L 0D  margin +1216
+both raised together          50W 2L 4D  margin +858     56W 0L 0D  margin +1216
+trapped_bonus   0             50W 2L 4D  margin +858
+```
+
+That last line is the finding. Turning the seal bonus **off entirely** changes
+nothing, which means the term never fires: not one node of one search in 56
+matches. The harness is not broken — `opponent_choke=400` scores 48W 4L 4D and
+crashes us twice, so the overrides do reach the search.
+
+The transcripts say the same thing about real play. Across ten real matches and
+1485 turns, the opponent was sealed in on **zero** of them. And it is not close:
+sealing needs their reachable room to fall to their own length, and the best
+moment of each match, as a ratio of room to length, went
+
+```
+11.8  14.0  14.0  16.0  16.0  18.7  37.3  44.8  44.8  56.0
+```
+
+against the 1.0 it would take. An order of magnitude away, every time.
+
+So the 900 is aspiration, not strategy. Seven of seventeen real matches were
+still won by the opponent crashing — but those are their own errors, not traps
+we built: `maximoadarvez` crashes on its own inside two turns, every time.
+
+Two things follow. **Aggression cannot currently be tuned at all**, because
+neither benchmark can see it, and a weight no measurement constrains is a weight
+that will drift somewhere harmful — `opponent_choke=400` is what that looks like
+when it does. And a genuine attempt at this would have to start by making the
+seal *reachable*: a sparring partner that does not kill itself first, so that
+matches reach an endgame where two long snakes are competing for one shrinking
+region. Until then, raising these numbers is not aggression, it is decoration.
+
 ### Three ideas that sounded right and were measured wrong
 
 Both came out of the correct diagnosis above — every loss is on points — and
