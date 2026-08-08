@@ -468,6 +468,49 @@ seal *reachable*: a sparring partner that does not kill itself first, so that
 matches reach an endgame where two long snakes are competing for one shrinking
 region. Until then, raising these numbers is not aggression, it is decoration.
 
+### Why the offline benchmarks disagree with real matches
+
+The attempt to fix the section above produced something more useful than the fix
+would have been. `coiler_policy` is a sparring partner built to survive — never
+enter a pocket smaller than your body, keep your tail in sight, eat only then —
+so that matches would reach the endgames the seal needs.
+
+It does not work, and it cannot: **a snake that refuses to enter a space smaller
+than itself is by construction impossible to seal in.** Twelve matches, sealed
+zero times, never closer than twelve times its length in room, where careless
+`rival_policy` was sealed once. Any partner built to survive will do this. The
+seal is not measurable offline, and that avenue is closed.
+
+What it exposed on the way is worth more. Run the current weights and the
+pre-fix ones (`score=1.0`) against both partners:
+
+```
+                      apples/match      opponent crashed      record
+score 3 (current)      8.5 / 9.4          5/12 · 3/12       11W-0L · 9W-3L
+score 1 (before)       7.9 / 6.3          7/12 · 8/12       12W-0L · 12W-0L
+```
+
+The old weights lose the apple count by a third and win the benchmark anyway,
+because they induce nearly three times the crashes — and a crash pays **1000**
+where an apple pays 100. Every sparring partner here kills itself often enough
+for that to decide the result, so the offline benchmarks systematically reward
+starving the bot and squeezing instead.
+
+Real rivals do not oblige: four of the six in `opponents.json` crash **0%** of
+the time, and across 54 real matches every single loss was on points with nobody
+crashing. So the benchmark pays for something real matches never pay for, and it
+was quietly arguing against the appetite fix while the fix took the bot from 1
+apple a match to 13.5 on the live server.
+
+Two rules follow, and they are the useful part of all this:
+
+- **Compare apples, not wins,** when measuring anything about food. The win
+  column is dominated by whether the partner happened to kill itself.
+- **A benchmark result that contradicts real matches is a fact about the
+  benchmark.** These partners were built from real opponents' crash rates, which
+  is honest as far as it goes, but a bot that crashes 38% of the time gives up
+  1000 points on its own and nothing you do matters much next to that.
+
 ### Three ideas that sounded right and were measured wrong
 
 Both came out of the correct diagnosis above — every loss is on points — and

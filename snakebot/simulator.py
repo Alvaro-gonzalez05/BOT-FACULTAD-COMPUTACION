@@ -212,6 +212,99 @@ def survivor_policy(greed: float = 3.0, depth: int = 4) -> Policy:
     return strategy_policy(strategy)
 
 
+def coiler_policy(greed: float = 0.5, seed: int = 0) -> Policy:
+    """A sparring partner that grows long and rarely kills itself.
+
+    **It was built to make the seal measurable and it does not.** The reasoning
+    was that the aggression weights cannot be tuned because no offline opponent
+    lives long enough to be trapped, so a partner that survives would create the
+    endgames the 900-point ``trapped_bonus`` is about. What it actually proves
+    is that the idea cannot work: a snake that refuses to enter a pocket smaller
+    than its body is, by construction, one you cannot seal in. Over twelve
+    matches we sealed it **zero** times and never got closer than twelve times
+    its own length in room, where ``rival_policy`` -- careless, and therefore
+    trappable -- was sealed once. The property that keeps it alive is the same
+    property that makes it untrappable. Any partner built this way will do this.
+
+    It is kept for what it turned out to be good for. It is the least suicidal
+    opponent available (3 crashes in 12 where ``rival_policy`` has 5), and that
+    matters because offline benchmarks here are systematically biased *towards
+    squeezing and away from eating*: a crash pays 1000 and an apple pays 100, so
+    against partners that kill themselves a bot that starves scores better. That
+    bias is measurable -- against this partner the current weights take 9.4
+    apples a match to the old ones' 6.3, and still show 9W-3L against 12W-0L,
+    entirely because the old ones induced 8 crashes to 3. Real rivals mostly do
+    not crash (four of the six in the book are at 0%), so the benchmark is
+    rewarding what real matches never pay for.
+
+    Two rules, in strict order:
+
+    * never move somewhere that cannot see its own tail, or into a pocket
+      smaller than its body -- following your tail is the one policy that
+      survives indefinitely without searching, which is what the two earlier
+      hand-written "safe and greedy" attempts were missing when they crashed
+      three and four times in twelve (a move can be safe now and doomed two
+      steps on; a move that keeps the tail reachable cannot be);
+    * only then, sometimes, eat.
+
+    That ordering is the whole design. ``rival_policy`` mixes the two -- its
+    ``care`` dial is the *chance* of checking safety at all, which is how real
+    bots die and is exactly right for imitating them, but it floors at about a
+    6% crash rate and so cannot produce an endgame either.
+
+    It is deliberately not our strategy: no search, no shared evaluation, so it
+    cannot mirror us the way ``survivor_policy`` does. What it will not do is
+    play *well* -- it has no plan beyond staying alive and eating what is in
+    front of it. It is a punching bag with stamina, and stamina is the part that
+    was missing.
+    """
+    # Written as a closure over `rng` so repeated matches with the same seed are
+    # reproducible, matching every other policy here.
+    rng = random.Random(seed)
+
+    def choose(position: Position) -> Direction:
+        legal = list(position.legal_moves())
+        if not legal:
+            return Direction.UP
+
+        blocked = position.blocked_cells()
+        decay = decay_map(position.me, position.opp)
+        length = len(position.me)
+        everywhere = position.rows * position.cols
+
+        def room_after(target: Cell) -> int:
+            return reachable_space(position.rows, position.cols, target, decay, limit=everywhere)
+
+        def food_distance(target: Cell) -> int:
+            distances = distance_map(position.rows, position.cols, target, blocked - {target})
+            return min((distances.get(f, INFINITE) for f in position.food), default=INFINITE)
+
+        safe: list[tuple[int, int, Direction]] = []
+        for direction, target in legal:
+            child = position.step(direction)
+            if child.crashed is not None:
+                continue
+            # Room strictly greater than the body, *and* the tail still in
+            # sight. Either alone is not enough: a corridor can be roomy and
+            # still be a dead end once you are inside it.
+            if room_after(target) <= length or not can_reach_own_tail(child):
+                continue
+            safe.append((room_after(target), food_distance(target), direction))
+
+        if safe:
+            hungry = rng.random() < greed and any(d < INFINITE for _, d, _ in safe)
+            if hungry:
+                return min(safe, key=lambda item: (item[1], -item[0]))[2]
+            return max(safe, key=lambda item: (item[0], -item[1]))[2]
+
+        # Nothing is provably safe. Take the most room left and play on -- this
+        # is where it will eventually die, and how often it gets here is the
+        # honest measure of the policy.
+        return max(legal, key=lambda item: room_after(item[1]))[0]
+
+    return choose
+
+
 def rival_policy(greed: float = 0.6, care: float = 1.0, seed: int = 0) -> Policy:
     """A sparring partner shaped like a measured opponent.
 
